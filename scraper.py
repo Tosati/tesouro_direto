@@ -3,7 +3,11 @@ import json
 import time
 import math
 
-# Códigos SGS do Banco Central
+# Séries auxiliares do Banco Central
+SERIE_SELIC = 11       # Selic diária
+SERIE_IPCA = 433       # IPCA diário
+
+# Códigos SGS dos títulos
 TITULOS = {
     "Tesouro Selic 2027": {
         "codigo_sgs": 4390,
@@ -66,43 +70,35 @@ def obter_serie(codigo):
 
     return []
 
-def calcular_pu_selic(serie):
-    if len(serie) < 2:
-        return None
+def calcular_pu_selic(serie_selic):
+    pu = 1000.0
+    for dia in serie_selic[-30:]:  # últimos 30 dias
+        taxa = float(dia["valor"]) / 100
+        pu *= (1 + taxa)
+    return pu
 
-    # Selic diária (%)
-    taxa_hoje = float(serie[-1]["valor"]) / 100
-    taxa_ontem = float(serie[-2]["valor"]) / 100
-
-    # PU arbitrário inicial (1000)
-    pu_ontem = 1000 * (1 + taxa_ontem)
-    pu_hoje = pu_ontem * (1 + taxa_hoje)
-
-    return pu_hoje
-
-def calcular_pu_ipca(serie):
-    if len(serie) < 2:
-        return None
-
-    # IPCA diário (%)
-    ipca_hoje = float(serie[-1]["valor"]) / 100
-    ipca_ontem = float(serie[-2]["valor"]) / 100
-
-    # PU arbitrário inicial (1000)
-    pu_ontem = 1000 * (1 + ipca_ontem)
-    pu_hoje = pu_ontem * (1 + ipca_hoje)
-
-    return pu_hoje
+def calcular_pu_ipca(serie_ipca, serie_real):
+    pu = 1000.0
+    dias = min(len(serie_ipca), len(serie_real))
+    for i in range(-dias, 0):
+        ipca = float(serie_ipca[i]["valor"]) / 100
+        real = float(serie_real[i]["valor"]) / 100
+        pu *= (1 + ipca) * (1 + real)
+    return pu
 
 resultado = {}
+
+# Séries auxiliares
+serie_selic = obter_serie(SERIE_SELIC)
+serie_ipca = obter_serie(SERIE_IPCA)
 
 for nome, info in TITULOS.items():
     codigo = info["codigo_sgs"]
     tipo = info["tipo"]
 
-    serie = obter_serie(codigo)
+    serie_titulo = obter_serie(codigo)
 
-    if len(serie) == 0:
+    if len(serie_titulo) == 0:
         resultado[nome] = {
             "codigo_sgs": codigo,
             "erro": "Falha ao obter dados do Banco Central",
@@ -110,23 +106,23 @@ for nome, info in TITULOS.items():
         }
         continue
 
-    ultimo = serie[-1]
+    ultimo = serie_titulo[-1]
     data_ultimo = ultimo["data"]
     valor_ultimo = float(ultimo["valor"])
 
-    if len(serie) > 1:
-        anterior = serie[-2]
+    if len(serie_titulo) > 1:
+        anterior = serie_titulo[-2]
         valor_anterior = float(anterior["valor"])
         variacao = valor_ultimo - valor_anterior
     else:
         valor_anterior = None
         variacao = None
 
-    # Calcular PU
+    # Calcular PU real
     if tipo == "selic":
-        pu = calcular_pu_selic(serie)
+        pu = calcular_pu_selic(serie_selic)
     else:
-        pu = calcular_pu_ipca(serie)
+        pu = calcular_pu_ipca(serie_ipca, serie_titulo)
 
     resultado[nome] = {
         "codigo_sgs": codigo,
@@ -134,8 +130,8 @@ for nome, info in TITULOS.items():
         "valor": valor_ultimo,
         "valor_anterior": valor_anterior,
         "variacao": variacao,
-        "pu_calculado": pu,
-        "serie_completa": serie
+        "pu_calculado": round(pu, 2),
+        "serie_completa": serie_titulo
     }
 
 with open("titulos.json", "w", encoding="utf-8") as f:
