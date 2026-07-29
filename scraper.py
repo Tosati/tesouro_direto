@@ -25,7 +25,6 @@ def obter_serie(codigo):
     for tentativa in range(5):
         try:
             r = requests.get(url, timeout=10)
-
             try:
                 data = r.json()
             except:
