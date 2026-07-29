@@ -119,7 +119,7 @@ for nome, info in TITULOS.items():
         "valor_anterior": valor_anterior,
         "variacao": variacao,
         "pu_calculado": round(pu, 2) if pu else None,
-        "ultimos_15_dias": serie_titulo[-15:]
+        "ultimos_15_dias": serie_titulo[-15:]  # SOMENTE ÚLTIMOS 15 DIAS
     }
 
 with open("titulos.json", "w", encoding="utf-8") as f:
