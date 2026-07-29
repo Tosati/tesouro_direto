@@ -1,5 +1,4 @@
 import requests
-import pandas as pd
 from bs4 import BeautifulSoup
 import json
 
@@ -12,7 +11,7 @@ headers = {
 html = requests.get(URL, headers=headers).text
 soup = BeautifulSoup(html, "html.parser")
 
-# Os dados ficam dentro de um script com JSON embutido
+# O JSON dos títulos está dentro de um <script> com "window.titulos"
 script = soup.find("script", text=lambda t: t and "window.titulos" in t).text
 
 # Extrair JSON
