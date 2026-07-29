@@ -1,23 +1,23 @@
 import requests
-from bs4 import BeautifulSoup
 import json
 
-URL = "https://www.tesourodireto.com.br/titulos"
-
-headers = {
-    "User-Agent": "Mozilla/5.0"
+# Códigos SGS do Banco Central para títulos do Tesouro Direto
+TITULOS = {
+    "Tesouro Selic 2027": 4390,
+    "Tesouro Selic 2029": 4391,
+    "Tesouro IPCA+ 2035": 4393,
+    "Tesouro IPCA+ 2045": 4394
 }
 
-html = requests.get(URL, headers=headers).text
-soup = BeautifulSoup(html, "html.parser")
+def obter_serie(codigo):
+    url = f"https://api.bcb.gov.br/dados/serie/bcdata.sgs.{codigo}/dados?formato=json"
+    return requests.get(url).json()
 
-# O JSON dos títulos está dentro de um <script> com "window.titulos"
-script = soup.find("script", text=lambda t: t and "window.titulos" in t).text
+resultado = {}
 
-# Extrair JSON
-json_text = script.split("window.titulos =")[1].split(";")[0].strip()
-data = json.loads(json_text)
+for nome, codigo in TITULOS.items():
+    serie = obter_serie(codigo)
+    resultado[nome] = serie[-1]  # último valor (mais recente)
 
-# Salvar JSON limpo
 with open("titulos.json", "w", encoding="utf-8") as f:
-    json.dump(data, f, ensure_ascii=False, indent=2)
+    json.dump(resultado, f, ensure_ascii=False, indent=2)
