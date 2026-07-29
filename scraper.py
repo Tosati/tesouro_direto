@@ -2,17 +2,21 @@ import requests
 import json
 import time
 
-# Códigos SGS do Banco Central (taxas diárias)
+# Séries auxiliares do Banco Central
+SERIE_SELIC = 11       # Selic diária
+SERIE_IPCA = 433       # IPCA diária
+
+# Códigos SGS dos títulos (taxa real diária)
 TITULOS = {
-    "Tesouro Selic 2027": 4390,
-    "Tesouro Selic 2029": 4391,
-    "Tesouro Selic 2031": 4392,
-    "Tesouro IPCA+ 2029": 4393,
-    "Tesouro IPCA+ 2032": 4394,
-    "Tesouro IPCA+ 2035": 4395,
-    "Tesouro IPCA+ 2040": 4396,
-    "Tesouro IPCA+ 2045": 4397,
-    "Tesouro IPCA+ 2055": 4398
+    "Tesouro Selic 2027": {"codigo_sgs": 4390, "tipo": "selic"},
+    "Tesouro Selic 2029": {"codigo_sgs": 4391, "tipo": "selic"},
+    "Tesouro Selic 2031": {"codigo_sgs": 4392, "tipo": "selic"},
+    "Tesouro IPCA+ 2029": {"codigo_sgs": 4393, "tipo": "ipca"},
+    "Tesouro IPCA+ 2032": {"codigo_sgs": 4394, "tipo": "ipca"},
+    "Tesouro IPCA+ 2035": {"codigo_sgs": 4395, "tipo": "ipca"},
+    "Tesouro IPCA+ 2040": {"codigo_sgs": 4396, "tipo": "ipca"},
+    "Tesouro IPCA+ 2045": {"codigo_sgs": 4397, "tipo": "ipca"},
+    "Tesouro IPCA+ 2055": {"codigo_sgs": 4398, "tipo": "ipca"}
 }
 
 def obter_serie(codigo):
@@ -43,12 +47,40 @@ def obter_serie(codigo):
 
     return []
 
+def calcular_pu_selic(serie_selic):
+    pu = 1000.0
+    dias = min(15, len(serie_selic))
+
+    for dia in serie_selic[-dias:]:
+        taxa = float(dia["valor"]) / 100
+        pu *= (1 + taxa)
+
+    return pu
+
+def calcular_pu_ipca(serie_ipca, serie_real):
+    pu = 1000.0
+    dias = min(len(serie_ipca), len(serie_real), 15)
+
+    for i in range(-dias, 0):
+        ipca = float(serie_ipca[i]["valor"]) / 100
+        real = float(serie_real[i]["valor"]) / 100
+        pu *= (1 + ipca) * (1 + real)
+
+    return pu
+
 resultado = {}
 
-for nome, codigo in TITULOS.items():
-    serie = obter_serie(codigo)
+# Séries auxiliares
+serie_selic = obter_serie(SERIE_SELIC)
+serie_ipca = obter_serie(SERIE_IPCA)
 
-    if len(serie) == 0:
+for nome, info in TITULOS.items():
+    codigo = info["codigo_sgs"]
+    tipo = info["tipo"]
+
+    serie_titulo = obter_serie(codigo)
+
+    if len(serie_titulo) == 0:
         resultado[nome] = {
             "codigo_sgs": codigo,
             "erro": "Falha ao obter dados do Banco Central",
@@ -56,19 +88,23 @@ for nome, codigo in TITULOS.items():
         }
         continue
 
-    # Último valor
-    ultimo = serie[-1]
+    ultimo = serie_titulo[-1]
     data_ultimo = ultimo["data"]
     valor_ultimo = float(ultimo["valor"])
 
-    # Valor anterior
-    if len(serie) > 1:
-        anterior = serie[-2]
+    if len(serie_titulo) > 1:
+        anterior = serie_titulo[-2]
         valor_anterior = float(anterior["valor"])
         variacao = valor_ultimo - valor_anterior
     else:
         valor_anterior = None
         variacao = None
+
+    # PU diário correto
+    if tipo == "selic":
+        pu = calcular_pu_selic(serie_selic)
+    else:
+        pu = calcular_pu_ipca(serie_ipca, serie_titulo)
 
     resultado[nome] = {
         "codigo_sgs": codigo,
@@ -76,7 +112,8 @@ for nome, codigo in TITULOS.items():
         "valor": valor_ultimo,
         "valor_anterior": valor_anterior,
         "variacao": variacao,
-        "ultimos_15_dias": serie[-15:]  # agora sim: últimos 15 dias reais
+        "pu_diario": round(pu, 4),
+        "ultimos_15_dias": serie_titulo[-15:]
     }
 
 with open("titulos.json", "w", encoding="utf-8") as f:
