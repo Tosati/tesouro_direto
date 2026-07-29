@@ -1,13 +1,9 @@
 import requests
 import pandas as pd
 
-URL = "https://www.tesourodireto.com.br/json/titulos.json"
+URL = "https://corsproxy.io/?https://www.tesourodireto.com.br/json/titulos.json"
 
-headers = {
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
-}
-
-response = requests.get(URL, headers=headers)
+response = requests.get(URL)
 
 data = response.json()
 
