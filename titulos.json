@@ -1,1 +1,38 @@
-[]
+{
+  "Tesouro Selic 2027": {
+    "data": "01/07/2026",
+    "valor": "1.11"
+  },
+  "Tesouro Selic 2029": {
+    "data": "01/07/2026",
+    "valor": "1.06"
+  },
+  "Tesouro Selic 2031": {
+    "data": "01/07/2026",
+    "valor": "14.15"
+  },
+  "Tesouro IPCA+ 2029": {
+    "data": "01/07/2026",
+    "valor": "121.60"
+  },
+  "Tesouro IPCA+ 2032": {
+    "data": "01/07/2026",
+    "valor": "113.99"
+  },
+  "Tesouro IPCA+ 2035": {
+    "data": "01/07/2026",
+    "valor": "126.67"
+  },
+  "Tesouro IPCA+ 2040": {
+    "data": "01/12/2014",
+    "valor": "85932"
+  },
+  "Tesouro IPCA+ 2045": {
+    "data": "01/12/2014",
+    "valor": "109858"
+  },
+  "Tesouro IPCA+ 2055": {
+    "data": "01/12/2014",
+    "valor": "526568"
+  }
+}
