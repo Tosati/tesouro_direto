@@ -1,14 +1,10 @@
 import requests
-from bs4 import BeautifulSoup
 import pandas as pd
 from datetime import datetime
 
-URL = "https://www.tesourodireto.com.br/titulos/"
+URL = "https://www.tesourodireto.com.br/json/titulos.json"
 
-html = requests.get(URL).text
-soup = BeautifulSoup(html, "html.parser")
-
-linhas = []
+data = requests.get(URL).json()
 
 titulos_desejados = [
     "Tesouro Selic 2027",
@@ -22,21 +18,20 @@ titulos_desejados = [
     "Tesouro IPCA+ 2055"
 ]
 
-tabela = soup.find("table")
+linhas = []
 
-for row in tabela.find_all("tr")[1:]:
-    cols = [c.get_text(strip=True) for c in row.find_all("td")]
-    nome = cols[0]
+for titulo in data["response"]["titulos"]:
+    nome = titulo["nome"]
 
     if nome in titulos_desejados:
         linhas.append({
             "nome": nome,
-            "data_cotacao": datetime.now().strftime("%Y-%m-%d"),
-            "pu_compra": cols[1],
-            "pu_venda": cols[2],
-            "taxa_compra": cols[3],
-            "taxa_venda": cols[4],
-            "vencimento": cols[5]
+            "data_cotacao": titulo["dataBase"],
+            "pu_compra": titulo["precoCompra"],
+            "pu_venda": titulo["precoVenda"],
+            "taxa_compra": titulo["taxaCompra"],
+            "taxa_venda": titulo["taxaVenda"],
+            "vencimento": titulo["vencimento"]
         })
 
 df = pd.DataFrame(linhas)
