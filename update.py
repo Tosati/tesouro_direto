@@ -1,12 +1,13 @@
 import requests
 import pandas as pd
-import json
 
-URL = "https://api.allorigins.win/get?url=https://www.tesourodireto.com.br/json/titulos.json"
+URL = "https://statusinvest.com.br/tesouro direto/api/tesouro"
 
-response = requests.get(URL)
-data_raw = response.json()["contents"]
-data = json.loads(data_raw)
+headers = {
+    "User-Agent": "Mozilla/5.0"
+}
+
+data = requests.get(URL, headers=headers).json()
 
 titulos_desejados = [
     "Tesouro Selic 2027",
@@ -22,18 +23,18 @@ titulos_desejados = [
 
 linhas = []
 
-for titulo in data["response"]["titulos"]:
-    nome = titulo["nome"]
+for titulo in data:
+    nome = titulo["name"]
 
     if nome in titulos_desejados:
         linhas.append({
             "nome": nome,
-            "data_cotacao": titulo["dataBase"],
-            "pu_compra": titulo["precoCompra"],
-            "pu_venda": titulo["precoVenda"],
-            "taxa_compra": titulo["taxaCompra"],
-            "taxa_venda": titulo["taxaVenda"],
-            "vencimento": titulo["vencimento"]
+            "data_cotacao": titulo["updatedAt"],
+            "pu_compra": titulo["priceBuy"],
+            "pu_venda": titulo["priceSell"],
+            "taxa_compra": titulo["rateBuy"],
+            "taxa_venda": titulo["rateSell"],
+            "vencimento": titulo["maturity"]
         })
 
 df = pd.DataFrame(linhas)
