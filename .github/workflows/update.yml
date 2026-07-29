@@ -15,7 +15,7 @@ jobs:
 
       - name: Instalar dependências
         run: |
-          pip install requests beautifulsoup4 pandas
+          pip install requests beautifulsoup4
 
       - name: Rodar scraper
         run: python scraper.py
