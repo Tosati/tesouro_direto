@@ -1,11 +1,12 @@
 import requests
 import pandas as pd
+import json
 
-URL = "https://corsproxy.io/?https://www.tesourodireto.com.br/json/titulos.json"
+URL = "https://api.allorigins.win/get?url=https://www.tesourodireto.com.br/json/titulos.json"
 
 response = requests.get(URL)
-
-data = response.json()
+data_raw = response.json()["contents"]
+data = json.loads(data_raw)
 
 titulos_desejados = [
     "Tesouro Selic 2027",
