@@ -3,7 +3,13 @@ import pandas as pd
 
 URL = "https://www.tesourodireto.com.br/json/titulos.json"
 
-data = requests.get(URL).json()
+headers = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
+}
+
+response = requests.get(URL, headers=headers)
+
+data = response.json()
 
 titulos_desejados = [
     "Tesouro Selic 2027",
