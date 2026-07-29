@@ -22,7 +22,29 @@ resultado = {}
 
 for nome, codigo in TITULOS.items():
     serie = obter_serie(codigo)
-    resultado[nome] = serie[-1]  # último valor (mais recente)
+
+    # Último valor
+    ultimo = serie[-1]
+    data_ultimo = ultimo["data"]
+    valor_ultimo = float(ultimo["valor"])
+
+    # Valor anterior (se existir)
+    if len(serie) > 1:
+        anterior = serie[-2]
+        valor_anterior = float(anterior["valor"])
+        variacao = valor_ultimo - valor_anterior
+    else:
+        valor_anterior = None
+        variacao = None
+
+    resultado[nome] = {
+        "codigo_sgs": codigo,
+        "data": data_ultimo,
+        "valor": valor_ultimo,
+        "valor_anterior": valor_anterior,
+        "variacao": variacao,
+        "serie_completa": serie  # histórico completo
+    }
 
 with open("titulos.json", "w", encoding="utf-8") as f:
     json.dump(resultado, f, ensure_ascii=False, indent=2)
