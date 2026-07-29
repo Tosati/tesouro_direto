@@ -26,19 +26,16 @@ def obter_serie(codigo):
         try:
             r = requests.get(url, timeout=10)
 
-            # Tenta converter para JSON
             try:
                 data = r.json()
             except:
                 time.sleep(2)
                 continue
 
-            # Se não for lista, ignora
             if not isinstance(data, list):
                 time.sleep(2)
                 continue
 
-            # Se vier vazio, tenta de novo
             if len(data) == 0:
                 time.sleep(2)
                 continue
@@ -49,7 +46,6 @@ def obter_serie(codigo):
             time.sleep(2)
 
     return []
-
 
 def calcular_pu_selic(serie_selic):
     if len(serie_selic) < 2:
@@ -64,7 +60,6 @@ def calcular_pu_selic(serie_selic):
 
     return pu
 
-
 def calcular_pu_ipca(serie_ipca, serie_real):
     if len(serie_ipca) < 2 or len(serie_real) < 2:
         return None
@@ -78,7 +73,6 @@ def calcular_pu_ipca(serie_ipca, serie_real):
         pu *= (1 + ipca) * (1 + real)
 
     return pu
-
 
 resultado = {}
 
@@ -96,7 +90,7 @@ for nome, info in TITULOS.items():
         resultado[nome] = {
             "codigo_sgs": codigo,
             "erro": "Falha ao obter dados do Banco Central",
-            "serie_completa": []
+            "ultimos_15_dias": []
         }
         continue
 
@@ -125,7 +119,7 @@ for nome, info in TITULOS.items():
         "valor_anterior": valor_anterior,
         "variacao": variacao,
         "pu_calculado": round(pu, 2) if pu else None,
-        "serie_completa": serie_titulo
+        "ultimos_15_dias": serie_titulo[-15:]
     }
 
 with open("titulos.json", "w", encoding="utf-8") as f:
