@@ -1,6 +1,5 @@
 import requests
 import pandas as pd
-from datetime import datetime
 
 URL = "https://www.tesourodireto.com.br/json/titulos.json"
 
