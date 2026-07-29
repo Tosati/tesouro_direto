@@ -5,7 +5,6 @@
     "valor": 1.11,
     "valor_anterior": 1.12,
     "variacao": -0.010000000000000009,
-    "pu_calculado": null,
     "ultimos_15_dias": [
       {
         "data": "01/05/2025",
@@ -75,7 +74,6 @@
     "valor": 1.06,
     "valor_anterior": 1.12,
     "variacao": -0.06000000000000005,
-    "pu_calculado": null,
     "ultimos_15_dias": [
       {
         "data": "01/05/2025",
@@ -145,7 +143,6 @@
     "valor": 14.15,
     "valor_anterior": 14.29,
     "variacao": -0.1399999999999988,
-    "pu_calculado": null,
     "ultimos_15_dias": [
       {
         "data": "01/05/2025",
@@ -215,7 +212,6 @@
     "valor": 121.6,
     "valor_anterior": 124.07,
     "variacao": -2.469999999999999,
-    "pu_calculado": 26519937580878.14,
     "ultimos_15_dias": [
       {
         "data": "01/05/2025",
@@ -285,7 +281,6 @@
     "valor": 113.99,
     "valor_anterior": 117.58,
     "variacao": -3.5900000000000034,
-    "pu_calculado": 10988706730713.22,
     "ultimos_15_dias": [
       {
         "data": "01/05/2025",
@@ -355,7 +350,6 @@
     "valor": 126.67,
     "valor_anterior": 128.41,
     "variacao": -1.7399999999999949,
-    "pu_calculado": 46890796381232.97,
     "ultimos_15_dias": [
       {
         "data": "01/05/2025",
@@ -425,7 +419,6 @@
     "valor": 85932.0,
     "valor_anterior": 84901.0,
     "variacao": 1031.0,
-    "pu_calculado": 3.4510471768712485e+88,
     "ultimos_15_dias": [
       {
         "data": "01/10/2013",
@@ -495,7 +488,6 @@
     "valor": 109858.0,
     "valor_anterior": 106403.0,
     "variacao": 3455.0,
-    "pu_calculado": 2.240059872956909e+88,
     "ultimos_15_dias": [
       {
         "data": "01/10/2013",
@@ -565,7 +557,6 @@
     "valor": 526568.0,
     "valor_anterior": 515896.0,
     "variacao": 10672.0,
-    "pu_calculado": 1.5927735981464362e+113,
     "ultimos_15_dias": [
       {
         "data": "01/10/2013",
