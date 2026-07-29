@@ -5,7 +5,7 @@
     "valor": 1.11,
     "valor_anterior": 1.12,
     "variacao": -0.010000000000000009,
-    "pu_calculado": 1022.4243200000002,
+    "pu_calculado": null,
     "serie_completa": [
       {
         "data": "01/08/1986",
@@ -1935,7 +1935,7 @@
     "valor": 1.06,
     "valor_anterior": 1.12,
     "variacao": -0.06000000000000005,
-    "pu_calculado": 1021.91872,
+    "pu_calculado": null,
     "serie_completa": [
       {
         "data": "01/08/1986",
@@ -3865,7 +3865,7 @@
     "valor": 14.15,
     "valor_anterior": 14.29,
     "variacao": -0.1399999999999988,
-    "pu_calculado": 1304.6203500000001,
+    "pu_calculado": null,
     "serie_completa": [
       {
         "data": "01/08/1986",
@@ -5795,7 +5795,7 @@
     "valor": 121.6,
     "valor_anterior": 124.07,
     "variacao": -2.469999999999999,
-    "pu_calculado": 4965.3912,
+    "pu_calculado": 26519937580878.14,
     "serie_completa": [
       {
         "data": "01/04/1999",
@@ -7117,7 +7117,7 @@
     "valor": 113.99,
     "valor_anterior": 117.58,
     "variacao": -3.5900000000000034,
-    "pu_calculado": 4655.994419999999,
+    "pu_calculado": 10988706730713.22,
     "serie_completa": [
       {
         "data": "01/04/1999",
@@ -8439,7 +8439,7 @@
     "valor": 126.67,
     "valor_anterior": 128.41,
     "variacao": -1.7399999999999949,
-    "pu_calculado": 5177.369470000001,
+    "pu_calculado": 46890796381232.97,
     "serie_completa": [
       {
         "data": "01/04/1999",
@@ -9761,7 +9761,7 @@
     "valor": 85932.0,
     "valor_anterior": 84901.0,
     "variacao": 1031.0,
-    "pu_calculado": 731280603.2,
+    "pu_calculado": 3.4510471768712485e+88,
     "serie_completa": [
       {
         "data": "01/07/1988",
@@ -11043,7 +11043,7 @@
     "valor": 109858.0,
     "valor_anterior": 106403.0,
     "variacao": 3455.0,
-    "pu_calculado": 1171085687.3999999,
+    "pu_calculado": 2.240059872956909e+88,
     "serie_completa": [
       {
         "data": "01/07/1988",
@@ -12325,7 +12325,7 @@
     "valor": 526568.0,
     "valor_anterior": 515896.0,
     "variacao": 10672.0,
-    "pu_calculado": 27175858132.800003,
+    "pu_calculado": 1.5927735981464362e+113,
     "serie_completa": [
       {
         "data": "01/07/1988",
