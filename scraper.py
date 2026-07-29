@@ -1,7 +1,6 @@
 import requests
 import json
 import time
-import math
 
 # Séries auxiliares do Banco Central
 SERIE_SELIC = 11       # Selic diária
@@ -9,42 +8,15 @@ SERIE_IPCA = 433       # IPCA diário
 
 # Códigos SGS dos títulos
 TITULOS = {
-    "Tesouro Selic 2027": {
-        "codigo_sgs": 4390,
-        "tipo": "selic"
-    },
-    "Tesouro Selic 2029": {
-        "codigo_sgs": 4391,
-        "tipo": "selic"
-    },
-    "Tesouro Selic 2031": {
-        "codigo_sgs": 4392,
-        "tipo": "selic"
-    },
-    "Tesouro IPCA+ 2029": {
-        "codigo_sgs": 4393,
-        "tipo": "ipca"
-    },
-    "Tesouro IPCA+ 2032": {
-        "codigo_sgs": 4394,
-        "tipo": "ipca"
-    },
-    "Tesouro IPCA+ 2035": {
-        "codigo_sgs": 4395,
-        "tipo": "ipca"
-    },
-    "Tesouro IPCA+ 2040": {
-        "codigo_sgs": 4396,
-        "tipo": "ipca"
-    },
-    "Tesouro IPCA+ 2045": {
-        "codigo_sgs": 4397,
-        "tipo": "ipca"
-    },
-    "Tesouro IPCA+ 2055": {
-        "codigo_sgs": 4398,
-        "tipo": "ipca"
-    }
+    "Tesouro Selic 2027": {"codigo_sgs": 4390, "tipo": "selic"},
+    "Tesouro Selic 2029": {"codigo_sgs": 4391, "tipo": "selic"},
+    "Tesouro Selic 2031": {"codigo_sgs": 4392, "tipo": "selic"},
+    "Tesouro IPCA+ 2029": {"codigo_sgs": 4393, "tipo": "ipca"},
+    "Tesouro IPCA+ 2032": {"codigo_sgs": 4394, "tipo": "ipca"},
+    "Tesouro IPCA+ 2035": {"codigo_sgs": 4395, "tipo": "ipca"},
+    "Tesouro IPCA+ 2040": {"codigo_sgs": 4396, "tipo": "ipca"},
+    "Tesouro IPCA+ 2045": {"codigo_sgs": 4397, "tipo": "ipca"},
+    "Tesouro IPCA+ 2055": {"codigo_sgs": 4398, "tipo": "ipca"}
 }
 
 def obter_serie(codigo):
@@ -53,13 +25,21 @@ def obter_serie(codigo):
     for tentativa in range(5):
         try:
             r = requests.get(url, timeout=10)
+
+            # Tenta converter para JSON
             try:
                 data = r.json()
             except:
                 time.sleep(2)
                 continue
 
-            if not data:
+            # Se não for lista, ignora
+            if not isinstance(data, list):
+                time.sleep(2)
+                continue
+
+            # Se vier vazio, tenta de novo
+            if len(data) == 0:
                 time.sleep(2)
                 continue
 
@@ -70,21 +50,35 @@ def obter_serie(codigo):
 
     return []
 
+
 def calcular_pu_selic(serie_selic):
+    if len(serie_selic) < 2:
+        return None
+
     pu = 1000.0
-    for dia in serie_selic[-30:]:  # últimos 30 dias
+    dias = min(30, len(serie_selic))
+
+    for dia in serie_selic[-dias:]:
         taxa = float(dia["valor"]) / 100
         pu *= (1 + taxa)
+
     return pu
 
+
 def calcular_pu_ipca(serie_ipca, serie_real):
+    if len(serie_ipca) < 2 or len(serie_real) < 2:
+        return None
+
     pu = 1000.0
-    dias = min(len(serie_ipca), len(serie_real))
+    dias = min(len(serie_ipca), len(serie_real), 30)
+
     for i in range(-dias, 0):
         ipca = float(serie_ipca[i]["valor"]) / 100
         real = float(serie_real[i]["valor"]) / 100
         pu *= (1 + ipca) * (1 + real)
+
     return pu
+
 
 resultado = {}
 
@@ -130,7 +124,7 @@ for nome, info in TITULOS.items():
         "valor": valor_ultimo,
         "valor_anterior": valor_anterior,
         "variacao": variacao,
-        "pu_calculado": round(pu, 2),
+        "pu_calculado": round(pu, 2) if pu else None,
         "serie_completa": serie_titulo
     }
 
