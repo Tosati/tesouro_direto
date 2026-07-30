@@ -1,38 +1,26 @@
 import requests
-from bs4 import BeautifulSoup
 import json
 import os
 
-URL = "https://www.tesourodireto.com.br/titulos/precos-e-taxas.htm"
+URL = "https://api.dadosdemercado.com.br/v1/treasury"
+TOKEN = "SEU_TOKEN_AQUI"  # coloque seu token aqui
 
 def obter_tesouro_direto():
-    r = requests.get(URL, timeout=20)
-    soup = BeautifulSoup(r.text, "html.parser")
-
-    tabela = soup.find("table")
-    linhas = tabela.find_all("tr")[1:]  # ignora cabeçalho
+    headers = {"Authorization": f"Bearer {TOKEN}"}
+    r = requests.get(URL, headers=headers, timeout=20)
+    data = r.json()
 
     resultado = {}
 
-    for linha in linhas:
-        colunas = [c.get_text(strip=True) for c in linha.find_all("td")]
-
-        if len(colunas) < 6:
-            continue
-
-        nome = colunas[0]
-        taxa = colunas[1]
-        preco = colunas[2]
-        vencimento = colunas[3]
-        preco_compra = colunas[4]
-        preco_venda = colunas[5]
+    for titulo in data:
+        nome = titulo["name"]
 
         resultado[nome] = {
-            "taxa": taxa,
-            "preco": preco,
-            "vencimento": vencimento,
-            "preco_compra": preco_compra,
-            "preco_venda": preco_venda
+            "taxa": titulo["rate"],
+            "preco": titulo["price"],
+            "vencimento": titulo["maturity"],
+            "preco_compra": titulo["buy_price"],
+            "preco_venda": titulo["sell_price"]
         }
 
     return resultado
