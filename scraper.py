@@ -115,5 +115,5 @@ for nome, info in TITULOS.items():
         "ultimos_15_dias": serie_titulo[-15:]
     }
 
-with open("titulos.json", "w", encoding="utf-8") as f:
+with open("api/titulos.json", "w", encoding="utf-8") as f:
     json.dump(resultado, f, ensure_ascii=False, indent=2)
