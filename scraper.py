@@ -114,6 +114,8 @@ for nome, info in TITULOS.items():
         "pu_diario": round(pu, 4),
         "ultimos_15_dias": serie_titulo[-15:]
     }
+with open("api/titulos.min.json", "w", encoding="utf-8") as f:
+    json.dump(resultado, f, ensure_ascii=False, separators=(",", ":"))
 
 with open("api/titulos.json", "w", encoding="utf-8") as f:
     json.dump(resultado, f, ensure_ascii=False, indent=2)
