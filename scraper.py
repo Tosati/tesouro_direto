@@ -1,12 +1,15 @@
 import requests
 import json
 import time
+import os
 
-# Séries auxiliares do Banco Central
+# ============================
+# CONFIGURAÇÃO DA API SGS
+# ============================
+
 SERIE_SELIC = 11       # Selic diária
 SERIE_IPCA = 433       # IPCA diária
 
-# Códigos SGS dos títulos (taxa real diária)
 TITULOS = {
     "Tesouro Selic 2027": {"codigo_sgs": 4390, "tipo": "selic"},
     "Tesouro Selic 2029": {"codigo_sgs": 4391, "tipo": "selic"},
@@ -19,32 +22,29 @@ TITULOS = {
     "Tesouro IPCA+ 2055": {"codigo_sgs": 4398, "tipo": "ipca"}
 }
 
+# ============================
+# FUNÇÃO PARA BAIXAR SÉRIE SGS
+# ============================
+
 def obter_serie(codigo):
     url = f"https://api.bcb.gov.br/dados/serie/bcdata.sgs.{codigo}/dados?formato=json"
 
     for tentativa in range(5):
         try:
             r = requests.get(url, timeout=10)
-            try:
-                data = r.json()
-            except:
-                time.sleep(2)
-                continue
+            data = r.json()
 
-            if not isinstance(data, list):
-                time.sleep(2)
-                continue
-
-            if len(data) == 0:
-                time.sleep(2)
-                continue
-
-            return data
+            if isinstance(data, list) and len(data) > 0:
+                return data
 
         except:
             time.sleep(2)
 
     return []
+
+# ============================
+# CÁLCULO DE PU DIÁRIO
+# ============================
 
 def calcular_pu_selic(serie_selic):
     pu = 1000.0
@@ -67,9 +67,12 @@ def calcular_pu_ipca(serie_ipca, serie_real):
 
     return pu
 
+# ============================
+# PROCESSAMENTO DOS TÍTULOS
+# ============================
+
 resultado = {}
 
-# Séries auxiliares
 serie_selic = obter_serie(SERIE_SELIC)
 serie_ipca = obter_serie(SERIE_IPCA)
 
@@ -99,7 +102,6 @@ for nome, info in TITULOS.items():
         valor_anterior = None
         variacao = None
 
-    # PU diário correto
     if tipo == "selic":
         pu = calcular_pu_selic(serie_selic)
     else:
@@ -114,8 +116,25 @@ for nome, info in TITULOS.items():
         "pu_diario": round(pu, 4),
         "ultimos_15_dias": serie_titulo[-15:]
     }
+
+# ============================
+# CRIAÇÃO DA ESTRUTURA /api
+# ============================
+
+os.makedirs("api/titulo", exist_ok=True)
+
+# JSON principal
+with open("api/titulos.json", "w", encoding="utf-8") as f:
+    json.dump(resultado, f, ensure_ascii=False, indent=2)
+
+# JSON minificado
 with open("api/titulos.min.json", "w", encoding="utf-8") as f:
     json.dump(resultado, f, ensure_ascii=False, separators=(",", ":"))
 
-with open("api/titulos.json", "w", encoding="utf-8") as f:
-    json.dump(resultado, f, ensure_ascii=False, indent=2)
+# JSON por título
+for nome, dados in resultado.items():
+    codigo = dados["codigo_sgs"]
+    caminho = f"api/titulo/{codigo}.json"
+
+    with open(caminho, "w", encoding="utf-8") as f:
+        json.dump(dados, f, ensure_ascii=False, indent=2)
